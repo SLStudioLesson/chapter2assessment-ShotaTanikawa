@@ -41,6 +41,7 @@ public class RecipeUI {
                         break;
                     case "2":
                         // 設問2: 新規登録機能
+                        addNewRecipe();
                         break;
                     case "3":
                         // 設問3: 検索機能
@@ -63,14 +64,36 @@ public class RecipeUI {
      * RecipeFileHandlerから読み込んだレシピデータを整形してコンソールに表示します。
      */
     private void displayRecipes() {
-        RecipeFileHandler recipeFileHandler = new RecipeFileHandler();
-        ArrayList<String> recipes = recipeFileHandler.readRecipes();
+        ArrayList<String> recipes = new ArrayList<>();
+        recipes = fileHandler.readRecipes();
 
-        System.out.println("Recipes:");
-        System.out.println("-----------------------------------");
+        //空の確認
+        if(recipes.isEmpty()){
+            System.out.println("No recipes available");
+            return;
+        }
+
+        //出力
+        System.out.println("Recipes");
         for (String recipe : recipes){
-            //System.out.println("Recipe Name: " + recipe[0]);
-            //System.out.println();
+            //,で区切る
+            String[] parts = recipe.split(",");
+
+            //レシピ名の出力
+            //料理名を出力
+            System.out.println("-----------------------------------");
+            System.out.println("Recipe Name: " + parts[0]);
+            System.out.print("Main Ingredients:");
+            //材料の出力
+            for (int i = 1; i < parts.length; i++){
+                System.out.print(parts[i]);
+            //コンマを最後以外に入れていく
+                if (i < parts.length - 1){
+                    System.out.print(", ");
+                }
+            }
+            System.out.println();
+
         }
     }
 
@@ -81,7 +104,22 @@ public class RecipeUI {
      * @throws java.io.IOException 入出力が受け付けられない
      */
     private void addNewRecipe() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
+        //レシピ名の入力
+        System.out.print("Enter recipe name: ");
+        String recipeName = reader.readLine();
+
+        //材料の入力
+        System.out.print("Enter main ingredients (comma separated): ");
+        String ingredients = reader.readLine();
+
+        //RecipeFileHandlerを使って新しいレシピを追加する
+        RecipeFileHandler handler = new RecipeFileHandler();
+        handler.addRecipe(recipeName, ingredients);
+
+        //成功メッセージ
+        System.out.println("Recipe added successfully.");
     }
 
     /**
